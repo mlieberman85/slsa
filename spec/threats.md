@@ -866,14 +866,10 @@ and [Defender's Perspective: Dependency Confusion and Typosquatting Attacks](/bl
 *Threat:* Register a package name that is similar looking to a popular package
 and get users to use your malicious package instead of the benign one.
 
-*Mitigation:* The SLSA Dependency Track does not prescribe specific
-typosquat defenses. A verifier requiring Provenance whose
-[recorded admission policies](dependency-track.md#dep-policy-attestation)
-include evaluation against a malicious-packages feed or organizational
-allow-list can refuse Provenance lacking those entries. The integrity
-guarantee from the Dep Track is that whatever defenses the platform
-applied are recorded in the Provenance; the choice of defenses is
-operator policy.
+*Mitigation:* This threat is not currently addressed by SLSA. That said, the
+requirement to make the source available can be a mild deterrent, can aid
+investigation or ad-hoc analysis, and can complement source-based typosquatting
+solutions.
 
 </details>
 
