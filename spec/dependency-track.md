@@ -1,6 +1,6 @@
 ---
 title: Dependency Track
-description: SLSA Dependency Track requirements for ingesting third-party build dependencies. Imports the attestable subset of OpenSSF S2C2F. Defines the Dependency Ingestion Provenance predicate.
+description: SLSA Dependency Track requirements for ingesting third-party build dependencies.
 ---
 
 # Basics
