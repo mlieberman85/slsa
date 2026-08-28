@@ -913,7 +913,7 @@ attestations. Most upstream OSS does not yet do so, so the
 for cases where upstream guarantees are absent. The track defines a
 per-ingestion attestation, Dependency Ingestion Provenance, and grades
 the platform's claims about each ingested dependency across three levels:
-L1 Inventoried (identity and content), L2 Controlled (controlled ingest
+L1 Inventoried (Integrity & Provenance), L2 Controlled (controlled ingest
 path, verified integrity, constrained ingest-time behavior), and L3
 Screened (deny-list, malware scan, upstream identity verified, source
 mirrored, bypass blocked). A future cross-cutting "Verified" axis covers
