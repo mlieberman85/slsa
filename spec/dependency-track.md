@@ -11,7 +11,9 @@ Enable an organization that ingests third-party software dependencies to
 measure, control, and reduce the supply chain risk those dependencies
 introduce. Define a per-ingestion attestation, Dependency Ingestion
 Provenance, that downstream parties can verify.
+## What is a dependency
 
+Specifically, we scope dependencies to blobs that can be ingested into a builder. A dependency as a subject must be able to have a digest and optionally a URI. A NPM package or container image with a hash is considered a dependency. A PURL with no verifiable hash is NOT a dependency.
 ## Why this track exists
 
 [Applying SLSA recursively](verifying-artifacts.md#step-3-optional-check-dependencies-recursively)
