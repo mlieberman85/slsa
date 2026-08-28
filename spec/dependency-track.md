@@ -178,7 +178,7 @@ large organizations benefit most.
 
 The scope is third-party build dependencies: software artifacts fetched or
 otherwise made available to the build environment during the build of a
-released artifact. Runtime dependencies, base images, and developer
+released artifact (dependencies provided through hermetically, through source, or downloaded during the build). Runtime dependencies, base images, and developer
 tooling are out of scope for this revision and listed under
 [Future Considerations](#future-considerations).
 
