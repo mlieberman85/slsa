@@ -11,13 +11,15 @@ Enable an organization that ingests third-party software dependencies to
 measure, control, and reduce the supply chain risk those dependencies
 introduce. Define a per-ingestion attestation, Dependency Ingestion
 Provenance, that downstream parties can verify.
+
 ## What is a dependency
 
-Specifically, we scope dependencies to blobs that can be ingested into a builder. A dependency as a subject must be able to have a digest and optionally a URI. A NPM package or container image with a hash is considered a dependency. A PURL with no verifiable hash is NOT a dependency.
+Specifically, we scope dependencies to blobs that can be ingested into a builder. A dependency as a subject MUST be able to have a digest and MAY have a URI. An NPM package or container image with a hash is considered a dependency. A PURL with no verifiable hash is NOT a dependency.
+
 ## Why this track exists
 
-[Applying SLSA recursively](verifying-artifacts.md#step-3-optional-check-dependencies-recursively)
-to every dependency would address most consumption risks if each
+[Applying SLSA recursively](verifying-artifacts.md) (Step 3 of that
+document) to every dependency would address most consumption risks if each
 upstream producer published SLSA Build and Source attestations. Most
 upstream OSS does not yet do so, and recursive verification is not
 achievable across most of the open-source ecosystem.
@@ -44,9 +46,9 @@ cross-cutting axis. See [Future Considerations](#future-considerations).
 
 ## Modes of establishing trust
 
-The Dependency Track recognizes three modes by which an ingestor may
+The Dependency Track recognizes three modes by which an ingestor MAY
 establish trust in a consumed third-party dependency. The modes are
-horizontal — a single Dependency Ingestion Provenance may attest to
+horizontal — a single Dependency Ingestion Provenance MAY attest to
 one, two, or all three simultaneously — and orthogonal to the L1 /
 L2 / L3 evidence-integrity axis. Downstream verifiers apply their own
 policy to decide which mode or combination of modes is acceptable.
@@ -104,11 +106,11 @@ policy the platform ran.
 
 ### Layering and the role of integrity
 
-The modes are additive. An ingestor may record all three for the same
+The modes are additive. An ingestor MAY record all three for the same
 dep — verify upstream SLSA Provenance (Mode 1), admit through a
 trusted internal registry (Mode 2), *and* run their own
 security-review policy (Mode 3) — as defense in depth. A verifier
-may require one, two, or all three.
+MAY require one, two, or all three.
 
 Byte-level [identity-verification (integrity)](#dep-validate-integrity)
 is a *foundation* all three modes rest on. Without a verified
@@ -148,8 +150,8 @@ The Dependency Track does not judge whether the ingestor's chosen
 trust modes are *good enough*. A verified upstream SLSA Build
 Provenance does not prove the upstream is not malicious — SLSA Build
 attests to how something was built, not to whether it was built to do
-good things. A trusted distribution system may itself be
-misconfigured or captured. An ingestor's own admission process may
+good things. A trusted distribution system can itself be
+misconfigured or captured. An ingestor's own admission process can
 be weak, incomplete, or perfunctory.
 
 What this track guarantees is that *whatever mode(s) the ingestor
@@ -227,27 +229,27 @@ The schema, parsing rules, and verification procedure are documented in
 
 ## Definitions
 
-| Primary Term | Description |
-| --- | --- |
-| Build dependency | Software artifact fetched or otherwise made available to the build environment during the build of the artifact. Includes open- and closed-source binary dependencies. |
-| Ingestor | The organization that operates the Dependency Ingestion Platform and consumes third-party build dependencies. May or may not also be a SLSA Producer of downstream artifacts. |
-| Dependency Ingestion Platform | Infrastructure that admits third-party build dependencies into the ingestor's environment and emits Dependency Ingestion Provenance per ingestion event. Typically composed of an artifact repository manager, scanner suite, and integrity verifier. |
-| Dependency Ingestion Provenance | Per-(artifact, ingestion event) attestation describing how the dependency entered the ingestor's environment. Predicate type `https://slsa.dev/dependency/v1`. |
-| Package registry | An entity that maps package names to artifacts within a packaging ecosystem. Most ecosystems support multiple registries (a global one plus private ones). |
-| Artifact repository manager | A storage solution that manages artifact lifecycle across package management systems while providing consistency to a CI/CD workflow. Typically the binary chokepoint of a Dependency Ingestion Platform. |
-| Package source files | A language-specific config file in a source code repository that identifies the package registry feeds or artifact repository manager feeds to consume dependencies from. |
-| Source mirror | An internally hosted copy of an upstream dependency's source code (not just its packaged artifact), maintained to enable source-level scanning and continued availability when upstream sources are unavailable. |
+| Primary Term | Description
+| --- | ---
+| Build dependency | Software artifact fetched or otherwise made available to the build environment during the build of the artifact. Includes open- and closed-source binary dependencies.
+| Ingestor | The organization that operates the Dependency Ingestion Platform and consumes third-party build dependencies. Might also be a SLSA Producer of downstream artifacts, or a pure consumer.
+| Dependency Ingestion Platform | Infrastructure that admits third-party build dependencies into the ingestor's environment and emits Dependency Ingestion Provenance per ingestion event. Typically composed of an artifact repository manager, scanner suite, and integrity verifier.
+| Dependency Ingestion Provenance | Per-(artifact, ingestion event) attestation describing how the dependency entered the ingestor's environment. Predicate type `https://slsa.dev/dependency/v1`.
+| Package registry | An entity that maps package names to artifacts within a packaging ecosystem. Most ecosystems support multiple registries (a global one plus private ones).
+| Artifact repository manager | A storage solution that manages artifact lifecycle across package management systems while providing consistency to a CI/CD workflow. Typically the binary chokepoint of a Dependency Ingestion Platform.
+| Package source files | A language-specific config file in a source code repository that identifies the package registry feeds or artifact repository manager feeds to consume dependencies from.
+| Source mirror | An internally hosted copy of an upstream dependency's source code (not just its packaged artifact), maintained to enable source-level scanning and continued availability when upstream sources are unavailable.
 
 ---
 
 ## Levels
 
-| Track/Level | Mnemonic | Requirements |
-| --- | --- | --- |
-| Dep L0 | (none) | (n/a) |
-| Dep L1 | Inventoried | The platform emits a Dependency Ingestion Provenance for each ingested dep, naming the dep and recording scan verdicts for vulnerabilities and end-of-life status. |
-| Dep L2 | Controlled | The platform is the only path through which deps are ingested, including transitive deps. Per-fetch integrity is verified. Upstream publisher signatures are verified when available. Install-time code execution and network access are constrained. The Provenance is signed by the platform. |
-| Dep L3 | Screened | Ingestion bypass is blocked. Each dep is screened against a deny-list and a malware feed, and is subject to a minimum version-age policy. Upstream provenance is verified when available. The platform's Provenance signature is recorded in a transparency log. |
+| Track/Level | Mnemonic | Requirements
+| --- | --- | ---
+| Dep L0 | (none) | (n/a)
+| Dep L1 | Inventoried | The platform emits a Dependency Ingestion Provenance for each ingested dep, naming the dep and recording scan verdicts for vulnerabilities and end-of-life status.
+| Dep L2 | Controlled | The platform is the only path through which deps are ingested, including transitive deps. Per-fetch integrity is verified. Upstream publisher signatures are verified when available. Install-time code execution and network access are constrained. The Provenance is signed by the platform.
+| Dep L3 | Screened | Ingestion bypass is blocked. Each dep is screened against a deny-list and a malware feed, and is subject to a minimum version-age policy. Upstream provenance is verified when available. The platform's Provenance signature is recorded in a transparency log.
 
 ### Why the levels are structured this way
 
@@ -272,7 +274,7 @@ The structure follows three principles from
     configuration.
 
 3.  *Prefer attestations over inferences.* Each requirement specifies
-    what the Dependency Ingestion Provenance must contain or guarantee,
+    what the Dependency Ingestion Provenance MUST contain or guarantee,
     not what configuration state to observe.
 
 A future cross-cutting axis would introduce a stronger "Verified" tier
@@ -422,7 +424,7 @@ All of [Dep L1], plus:
 <dt>Notes<dd>
 
 -   This track does not prescribe which admission policies the
-    platform must apply. A platform that applies no admission policies
+    platform MUST apply. A platform that applies no admission policies
     records an empty `policyEvaluations[]`; verifiers can refuse that
     as a matter of their own policy.
 -   A determined developer or build can still bypass the configured
@@ -691,7 +693,7 @@ artifacts under its own controlled path; consumers fetch from the
 platform, not from upstream registries directly.
 
 At L2 the chokepoint is configured. Structural enforcement that makes
-the chokepoint the only physically reachable path is required at L3
+the chokepoint the only physically reachable path is REQUIRED at L3
 (see [Block non-platform paths](#dep-enforce-curated-feed)).
 
 > Implementations vary by scale. A solo project: `.npmrc` pinned to a
@@ -792,9 +794,9 @@ cryptographic digest. The Provenance MUST NOT be emitted with a `deny`
 verdict for an artifact that was admitted (a `deny` verdict implies
 admission was refused).
 
-This requirement does NOT prescribe which policies a platform must
+This requirement does NOT prescribe which policies a platform MUST
 apply. The Dependency Track does not specify whether to use a
-deny-list, what the version-age cutoff should be, which malware
+deny-list, what the version-age cutoff SHOULD be, which malware
 scanner to consult, or which custom organizational policies to apply.
 Those are operator and verifier choices. The integrity claim is that
 *whatever policies are applied are transparent in the Provenance*. A
@@ -803,7 +805,7 @@ satisfy the verifier's policy.
 
 This is structurally similar to how Build Provenance's
 `externalParameters` field works: the Build Track does not say which
-parameters a build must accept, but it does require that all such
+parameters a build MUST accept, but it does require that all such
 parameters be captured in the Provenance.
 
 > For example: a platform that integrates the OpenSSF Malicious
@@ -945,7 +947,7 @@ method by which the property is achieved.
 This is an outcome property. The Dependency Track does not prescribe
 how the platform achieves it; the requirement is the property and the
 attestation of it. Two methods are recognized by the schema as ways to
-satisfy the outcome and may be recorded in `ingestionIsolation.method`:
+satisfy the outcome and MAY be recorded in `ingestionIsolation.method`:
 
 -   `no-dep-code-executed`: no dependency-supplied code ran during
     ingestion (install hooks fully blocked, source distributions that
@@ -1023,14 +1025,14 @@ of S2C2F requirements that are integrity-relevant — about evidence
 existence, evidence authenticity, controlled flow, and platform
 hardening — rather than best-practice prescriptions.
 
-| S2C2F ID | Practice | S2C2F level | SLSA Dep level | Requirement |
-| --- | --- | --- | --- | --- |
-| INV-1 | Inventory | L1 | L1 | [Inventory](#dep-automated-inventory) |
-| ING-2 | Ingest | L1 | **L2** | [Operate as ingestion chokepoint](#dep-internal-binary-repo) |
-| AUD-3 | Audit | L2 | L2 | [Identity-verification verdict (integrity)](#dep-validate-integrity) |
-| ENF-1 | Enforce | L2 | L2 | [Configure build to resolve through the platform](#dep-package-source-config) |
-| ENF-2 | Enforce | L3 | L3 | [Block non-platform paths](#dep-enforce-curated-feed) |
-| AUD-1 | Audit | L3 | L3 | [Upstream-provenance verdict recorded](#dep-verify-provenance) |
+| S2C2F ID | Practice | S2C2F level | SLSA Dep level | Requirement
+| --- | --- | --- | --- | ---
+| INV-1 | Inventory | L1 | L1 | [Inventory](#dep-automated-inventory)
+| ING-2 | Ingest | L1 | **L2** | [Operate as ingestion chokepoint](#dep-internal-binary-repo)
+| AUD-3 | Audit | L2 | L2 | [Identity-verification verdict (integrity)](#dep-validate-integrity)
+| ENF-1 | Enforce | L2 | L2 | [Configure build to resolve through the platform](#dep-package-source-config)
+| ENF-2 | Enforce | L3 | L3 | [Block non-platform paths](#dep-enforce-curated-feed)
+| AUD-1 | Audit | L3 | L3 | [Upstream-provenance verdict recorded](#dep-verify-provenance)
 
 ING-2 moves from S2C2F L1 to Dep L2. S2C2F placed the chokepoint as
 foundational practice. In this track the chokepoint is what grounds
@@ -1042,13 +1044,13 @@ the L2 claim.
 These requirements have no S2C2F ID. They address integrity threats
 S2C2F does not enumerate as attestable claims.
 
-| Requirement | Dep level | Why it's needed |
-| --- | --- | --- |
-| [Admit transitive dependencies through the platform](#dep-transitive-resolution) | L2 | The chokepoint's integrity claim extends to transitive resolution. Without this, an L2 ingestor could chokepoint the direct dep and let its transitive dependencies be pulled from arbitrary upstream sources, defeating the chokepoint. |
-| [Identity-verification verdict (publisher signature)](#dep-publisher-signature) | L2 | Per-fetch integrity (matches a known hash) and upstream provenance verification (matches the upstream's claimed build process) are distinct from publisher signature verification (signed by the publisher's identity). Publisher signature is the strongest control against publisher-account takeover. |
-| [Record any admission policies applied](#dep-policy-attestation) | L2 | The integrity claim that *whatever policies the platform applies are transparent in the Provenance*. The track does not prescribe which policies to apply; it requires that those applied be recorded so verifiers can apply policy on top. |
-| [Signing infrastructure isolation](#dep-signing-isolation) | L3 | Addresses Shai Hulud-style npm-worm attacks where install scripts exfiltrate credentials (including signing keys) from the ingestion environment. Without this, a malicious dep can forge Provenance about itself or future deps. Direct parallel to Build L3 signing-key isolation. |
-| [Cross-dep ingestion isolation](#dep-ingestion-isolation) | L3 | Outcome property: a dep's ingestion cannot affect another dep's ingestion or the Provenance about it. Direct parallel to Build L3 ephemeral build environment. |
+| Requirement | Dep level | Why it's needed
+| --- | --- | ---
+| [Admit transitive dependencies through the platform](#dep-transitive-resolution) | L2 | The chokepoint's integrity claim extends to transitive resolution. Without this, an L2 ingestor could chokepoint the direct dep and let its transitive dependencies be pulled from arbitrary upstream sources, defeating the chokepoint.
+| [Identity-verification verdict (publisher signature)](#dep-publisher-signature) | L2 | Per-fetch integrity (matches a known hash) and upstream provenance verification (matches the upstream's claimed build process) are distinct from publisher signature verification (signed by the publisher's identity). Publisher signature is the strongest control against publisher-account takeover.
+| [Record any admission policies applied](#dep-policy-attestation) | L2 | The integrity claim that *whatever policies the platform applies are transparent in the Provenance*. The track does not prescribe which policies to apply; it requires that those applied be recorded so verifiers can apply policy on top.
+| [Signing infrastructure isolation](#dep-signing-isolation) | L3 | Addresses Shai Hulud-style npm-worm attacks where install scripts exfiltrate credentials (including signing keys) from the ingestion environment. Without this, a malicious dep can forge Provenance about itself or future deps. Direct parallel to Build L3 signing-key isolation.
+| [Cross-dep ingestion isolation](#dep-ingestion-isolation) | L3 | Outcome property: a dep's ingestion cannot affect another dep's ingestion or the Provenance about it. Direct parallel to Build L3 ephemeral build environment.
 
 ### Out of scope for this track (best-practice prescriptions)
 
@@ -1059,18 +1061,18 @@ organizational practices rather than integrity properties of the
 Provenance. The OpenSSF Security Baseline is the appropriate home for
 these. A verifier targeting Dep L_n MAY independently require that
 the Provenance record any of these as a matter of verifier policy
-(e.g., "Provenance must record a vulnerability scan verdict").
+(e.g., "Provenance MUST record a vulnerability scan verdict").
 
-| S2C2F ID | Reason |
-| --- | --- |
-| SCA-1 (Vulnerability scan) | Prescribes which scan tooling to run. The Dep Track allows producers to record scan verdicts (`scans[].type == "vulnerability"`) but does not require the scan be performed. |
-| SCA-2 (License attribution) | Compliance concern, not integrity. License metadata is well-served by SBOMs. |
-| SCA-3 (EOL detection) | Prescribes EOL scanning. Producers MAY record EOL verdicts in the Provenance; verifier policy decides if required. |
-| SCA-4 (Malware scan) | Prescribes malware scanning. Producers MAY record malware verdicts; verifier policy decides if required. |
-| ING-3 (Deny-list) | Prescribes a specific admission-policy mechanism (deny-list). The Dep Track's [policy-attestation requirement](#dep-policy-attestation) captures the integrity-relevant generalization: any admission policy the platform applies is recorded. Specific deny-list choice is left to operator and verifier policy. |
-| UPD-2 (Automated update tooling) | Organizational practice. Routed to the OpenSSF Security Baseline. |
-| ING-4 (Source mirror) | Source mirroring is most valuable when paired with rebuild, which is reserved for the future "Verified" cross-cutting axis. |
-| AUD-2 (Bypass detection) | Detect-only signal subsumed at L3 by [structural enforcement](#dep-enforce-curated-feed). |
+| S2C2F ID | Reason
+| --- | ---
+| SCA-1 (Vulnerability scan) | Prescribes which scan tooling to run. The Dep Track allows producers to record scan verdicts (`scans[].type == "vulnerability"`) but does not require the scan be performed.
+| SCA-2 (License attribution) | Compliance concern, not integrity. License metadata is well-served by SBOMs.
+| SCA-3 (EOL detection) | Prescribes EOL scanning. Producers MAY record EOL verdicts in the Provenance; verifier policy decides if REQUIRED.
+| SCA-4 (Malware scan) | Prescribes malware scanning. Producers MAY record malware verdicts; verifier policy decides if REQUIRED.
+| ING-3 (Deny-list) | Prescribes a specific admission-policy mechanism (deny-list). The Dep Track's [policy-attestation requirement](#dep-policy-attestation) captures the integrity-relevant generalization: any admission policy the platform applies is recorded. Specific deny-list choice is left to operator and verifier policy.
+| UPD-2 (Automated update tooling) | Organizational practice. Routed to the OpenSSF Security Baseline.
+| ING-4 (Source mirror) | Source mirroring is most valuable when paired with rebuild, which is reserved for the future "Verified" cross-cutting axis.
+| AUD-2 (Bypass detection) | Detect-only signal subsumed at L3 by [structural enforcement](#dep-enforce-curated-feed).
 
 ### Deferred to a future cross-cutting axis
 
@@ -1080,24 +1082,24 @@ a different kind of claim from what the Dep Track describes. A future
 cross-cutting "Verified" axis is the intended home. See
 [Future Considerations](#future-considerations).
 
-| S2C2F ID | Practice | S2C2F level | Description |
-| --- | --- | --- | --- |
-| REB-1 | Rebuild | L4 | Rebuild OSS in a trusted build environment or validate reproducible builds. |
-| REB-2 | Rebuild | L4 | Sign rebuilt OSS. |
-| REB-3 | Rebuild | L4 | Generate SBOMs for rebuilt OSS. |
-| REB-4 | Rebuild | L4 | Sign produced SBOMs. |
-| AUD-4 | Audit | L4 | Validate SBOMs of consumed OSS. |
+| S2C2F ID | Practice | S2C2F level | Description
+| --- | --- | --- | ---
+| REB-1 | Rebuild | L4 | Rebuild OSS in a trusted build environment or validate reproducible builds.
+| REB-2 | Rebuild | L4 | Sign rebuilt OSS.
+| REB-3 | Rebuild | L4 | Generate SBOMs for rebuilt OSS.
+| REB-4 | Rebuild | L4 | Sign produced SBOMs.
+| AUD-4 | Audit | L4 | Validate SBOMs of consumed OSS.
 
 ### Excluded (referred to OpenSSF Security Baseline)
 
-| S2C2F ID | Practice | S2C2F level | Reason for exclusion | Referred to |
-| --- | --- | --- | --- | --- |
-| ING-1 | Ingest | L1 | The list of trusted public registries is a policy choice. The enforcement that fetches came from one is captured by the [chokepoint](#dep-internal-binary-repo) at L2 and [structural enforcement](#dep-enforce-curated-feed) at L3. | OpenSSF Security Baseline (registry-approval policy) |
-| INV-2 | Inventory | L2 | "Have an OSS Incident Response Plan" is organizational. No per-artifact evidence. | OpenSSF Security Baseline (incident response) |
-| UPD-1 | Update | L1 | "Update vulnerable OSS manually" is a capability assertion, not an artifact property. | OpenSSF Security Baseline (vulnerability management) |
-| UPD-3 | Update | L2 | "Display OSS vulnerabilities in developer contribution flow" requires two-person review, which is covered by the [SLSA Source Track](source-requirements.md). The PR-check half is redundant with Source Track requirements. | SLSA Source Track + OpenSSF Security Baseline |
-| SCA-5 | Scan | L3 | "Perform proactive security analysis of OSS" describes an upstream code audit practice. A signed audit report bound to a commit or artifact digest could be attestable in a future iteration, once a predicate type is defined. | OpenSSF Security Baseline (security review practice) |
-| FIX-1 | Fix-It-And-Upstream | L4 | "Capability to privately patch and upstream a fix" is a capability assertion. The resulting rebuild evidence is covered by the deferred REB-1..4. | OpenSSF Security Baseline (vulnerability response capability) |
+| S2C2F ID | Practice | S2C2F level | Reason for exclusion | Referred to
+| --- | --- | --- | --- | ---
+| ING-1 | Ingest | L1 | The list of trusted public registries is a policy choice. The enforcement that fetches came from one is captured by the [chokepoint](#dep-internal-binary-repo) at L2 and [structural enforcement](#dep-enforce-curated-feed) at L3. | OpenSSF Security Baseline (registry-approval policy)
+| INV-2 | Inventory | L2 | "Have an OSS Incident Response Plan" is organizational. No per-artifact evidence. | OpenSSF Security Baseline (incident response)
+| UPD-1 | Update | L1 | "Update vulnerable OSS manually" is a capability assertion, not an artifact property. | OpenSSF Security Baseline (vulnerability management)
+| UPD-3 | Update | L2 | "Display OSS vulnerabilities in developer contribution flow" requires two-person review, which is covered by the [SLSA Source Track](source-requirements.md). The PR-check half is redundant with Source Track requirements. | SLSA Source Track + OpenSSF Security Baseline
+| SCA-5 | Scan | L3 | "Perform proactive security analysis of OSS" describes an upstream code audit practice. A signed audit report bound to a commit or artifact digest could be attestable in a future iteration, once a predicate type is defined. | OpenSSF Security Baseline (security review practice)
+| FIX-1 | Fix-It-And-Upstream | L4 | "Capability to privately patch and upstream a fix" is a capability assertion. The resulting rebuild evidence is covered by the deferred REB-1..4. | OpenSSF Security Baseline (vulnerability response capability)
 
 The original S2C2F specification text is published under the
 [Community Specification License 1.0](https://github.com/CommunitySpecification/1.0).

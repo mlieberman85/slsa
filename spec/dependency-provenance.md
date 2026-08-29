@@ -53,7 +53,7 @@ This predicate is the RECOMMENDED way to satisfy the
 A Dependency Ingestion Provenance is an attestation that a particular
 [Dependency Ingestion Platform](dependency-track.md#dependency-ingestion-platform)
 admitted a particular third-party dependency artifact, having applied
-the controls required at the claimed Dependency Track level.
+the controls REQUIRED at the claimed Dependency Track level.
 
 -   Each ingestion event runs as an independent process on the platform.
     The `ingestionPlatform.id` identifies this platform, representing the
@@ -86,23 +86,23 @@ the controls required at the claimed Dependency Track level.
   "_type": "https://in-toto.io/Statement/v1",
   "subject": [{
     "name": "<package-name@version>",
-    "digest": { "<algorithm>": "<digest>" /* required */ }
+    "digest": { "<algorithm>": "<digest>" /* REQUIRED */ }
   }],
 
   "predicateType": "https://slsa.dev/dependency/v1",
   "predicate": {
-    "ingestor":             { /* Ingestor; required */ },
-    "ingestionPlatform":    { /* Platform; required */ },
-    "upstream":             { /* UpstreamRef; required */ },
-    "ingestion":            { /* IngestionEvent; required */ },
-    "resolvedFrom":         { /* ResolvedFromRef; required at L2+ for transitive deps */ },
-    "scans":                [ /* Scan; optional - descriptive, attests to scans the platform chose to run */ ],
-    "integrity":            { /* IntegrityVerdict; optional at L1, required `verified` at L2+ */ },
-    "publisherSignature":   { /* PublisherSignature; optional at L1, required at L2+ (value may be `unavailable`) */ },
-    "policyEvaluations":    [ /* PolicyEvaluation; required at L2+ for any admission policies the platform applies */ ],
-    "upstreamProvenance":   { /* UpstreamProvenanceRef; required at L3+ (value may be `unavailable` / `not-attempted`) */ },
-    "signingIsolation":     { /* SigningIsolation; required at L3+ */ },
-    "ingestionIsolation":   { /* IngestionIsolation; required at L3+ */ }
+    "ingestor":             { /* Ingestor; REQUIRED */ },
+    "ingestionPlatform":    { /* Platform; REQUIRED */ },
+    "upstream":             { /* UpstreamRef; REQUIRED */ },
+    "ingestion":            { /* IngestionEvent; REQUIRED */ },
+    "resolvedFrom":         { /* ResolvedFromRef; REQUIRED at L2+ for transitive deps */ },
+    "scans":                [ /* Scan; OPTIONAL - descriptive, attests to scans the platform chose to run */ ],
+    "integrity":            { /* IntegrityVerdict; OPTIONAL at L1, REQUIRED `verified` at L2+ */ },
+    "publisherSignature":   { /* PublisherSignature; OPTIONAL at L1, REQUIRED at L2+ (value MAY be `unavailable`) */ },
+    "policyEvaluations":    [ /* PolicyEvaluation; REQUIRED at L2+ for any admission policies the platform applies */ ],
+    "upstreamProvenance":   { /* UpstreamProvenanceRef; REQUIRED at L3+ (value MAY be `unavailable` / `not-attempted`) */ },
+    "signingIsolation":     { /* SigningIsolation; REQUIRED at L3+ */ },
+    "ingestionIsolation":   { /* IngestionIsolation; REQUIRED at L3+ */ }
   }
 }
 ```
@@ -113,51 +113,51 @@ The cryptographic digest of the ingested dependency artifact. One subject
 per attestation: a Dependency Ingestion Provenance describes one ingestion
 event for one artifact.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `subject[*].name` | string | OPTIONAL. Human-readable identifier (typically `<package-name>@<version>`). |
-| `subject[*].digest` | object | REQUIRED. Cryptographic digest of the admitted artifact, keyed by algorithm. |
+| Field | Type | Description
+| --- | --- | ---
+| `subject[*].name` | string | OPTIONAL. Human-readable identifier (typically `<package-name>@<version>`).
+| `subject[*].digest` | object | REQUIRED. Cryptographic digest of the admitted artifact, keyed by algorithm.
 
 ### `predicate.ingestor`
 
 Identity of the organization that operates the Dependency Ingestion
 Platform and consumes the dependency. REQUIRED at all levels.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | string | REQUIRED. URI identifying the ingestor (e.g., `https://example.com/`). |
-| `name` | string | OPTIONAL. Human-readable name. |
+| Field | Type | Description
+| --- | --- | ---
+| `id` | string | REQUIRED. URI identifying the ingestor (e.g., `https://example.com/`).
+| `name` | string | OPTIONAL. Human-readable name.
 
 ### `predicate.ingestionPlatform`
 
 Identity of the Dependency Ingestion Platform that produced this
 attestation. REQUIRED at all levels.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | string | REQUIRED. URI identifying the platform. The platform implementer SHOULD define a security model for the platform that identifies the transitive closure of components covered by this identifier. |
-| `version` | string | OPTIONAL. Implementer-defined platform version. |
+| Field | Type | Description
+| --- | --- | ---
+| `id` | string | REQUIRED. URI identifying the platform. The platform implementer SHOULD define a security model for the platform that identifies the transitive closure of components covered by this identifier.
+| `version` | string | OPTIONAL. Implementer-defined platform version.
 
 ### `predicate.upstream`
 
 Upstream identity of the dependency that was admitted. REQUIRED at all
 levels.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `registry` | string | REQUIRED. URI of the upstream registry from which the artifact was originally retrieved. |
-| `name` | string | REQUIRED. Package name in the upstream registry's namespace. |
-| `version` | string | REQUIRED. Package version. |
-| `digest` | object | OPTIONAL at L1; REQUIRED at L2+. Cryptographic digest of the upstream artifact as published. |
+| Field | Type | Description
+| --- | --- | ---
+| `registry` | string | REQUIRED. URI of the upstream registry from which the artifact was originally retrieved.
+| `name` | string | REQUIRED. Package name in the upstream registry's namespace.
+| `version` | string | REQUIRED. Package version.
+| `digest` | object | OPTIONAL at L1; REQUIRED at L2+. Cryptographic digest of the upstream artifact as published.
 
 ### `predicate.ingestion`
 
 Per-event metadata. REQUIRED at all levels.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `timestamp` | string | REQUIRED. RFC 3339 timestamp of the ingestion event. |
-| `path` | string | REQUIRED. URI of the internal path used to admit the artifact (typically the platform-mirrored URL of the dependency). |
+| Field | Type | Description
+| --- | --- | ---
+| `timestamp` | string | REQUIRED. RFC 3339 timestamp of the ingestion event.
+| `path` | string | REQUIRED. URI of the internal path used to admit the artifact (typically the platform-mirrored URL of the dependency).
 
 ### `predicate.resolvedFrom`
 
@@ -166,43 +166,43 @@ dependency, identifies the direct dependency that pulled this artifact
 in. REQUIRED at L2+ for transitive dependencies. Absent or `null` for
 top-level dependencies declared directly by the ingestor.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `subject` | object | REQUIRED. Cryptographic digest of the direct (parent) dependency artifact whose resolution brought this artifact in. Matches the `subject[*].digest` of the parent's Dependency Ingestion Provenance. |
-| `relationship` | string | OPTIONAL. Implementer-defined relationship label (e.g., `runtime-dependency`, `dev-dependency`, `build-dependency`). |
+| Field | Type | Description
+| --- | --- | ---
+| `subject` | object | REQUIRED. Cryptographic digest of the direct (parent) dependency artifact whose resolution brought this artifact in. Matches the `subject[*].digest` of the parent's Dependency Ingestion Provenance.
+| `relationship` | string | OPTIONAL. Implementer-defined relationship label (e.g., `runtime-dependency`, `dev-dependency`, `build-dependency`).
 
 ### `predicate.scans[]`
 
 Array of scan verdicts. This field is OPTIONAL at all levels and
 *descriptive* — the Dependency Track does not specify which scans a
-platform must run. The platform records what it ran; verifiers apply
+platform MUST run. The platform records what it ran; verifiers apply
 their own policy on top.
 
-Common scan types implementers may attest to: `vulnerability`, `eol`,
+Common scan types implementers MAY attest to: `vulnerability`, `eol`,
 `malware`, `license`, or any implementer-defined scan type.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `type` | string | REQUIRED. The scan type (e.g., `vulnerability`, `eol`, `malware`, `license`). Implementer-defined types are allowed. |
-| `scanner.id` | string | REQUIRED if `availability == "available"`. URI identifying the scanner. |
-| `scanner.version` | string | OPTIONAL. Scanner version. |
-| `dataSource` | string | REQUIRED. Identifier of the data source the scanner consulted (e.g., `OSV`, `NVD`, `endoflife.date`). MAY be a comma-separated list of sources consulted. |
-| `timestamp` | string | REQUIRED. RFC 3339 timestamp of the scan or of the attempted check. |
-| `verdict` | string | REQUIRED if `availability == "available"`. Scanner-defined verdict (e.g., `clean`, `vulnerable`, `eol`). |
-| `availability` | string | OPTIONAL. MUST be set to `unavailable` when no data source covers the dep for the given scan type. |
-| `details` | object | OPTIONAL. Scanner-specific details (e.g., CVE list for `vulnerability`). |
+| Field | Type | Description
+| --- | --- | ---
+| `type` | string | REQUIRED. The scan type (e.g., `vulnerability`, `eol`, `malware`, `license`). Implementer-defined types are allowed.
+| `scanner.id` | string | REQUIRED if `availability == "available"`. URI identifying the scanner.
+| `scanner.version` | string | OPTIONAL. Scanner version.
+| `dataSource` | string | REQUIRED. Identifier of the data source the scanner consulted (e.g., `OSV`, `NVD`, `endoflife.date`). MAY be a comma-separated list of sources consulted.
+| `timestamp` | string | REQUIRED. RFC 3339 timestamp of the scan or of the attempted check.
+| `verdict` | string | REQUIRED if `availability == "available"`. Scanner-defined verdict (e.g., `clean`, `vulnerable`, `eol`).
+| `availability` | string | OPTIONAL. MUST be set to `unavailable` when no data source covers the dep for the given scan type.
+| `details` | object | OPTIONAL. Scanner-specific details (e.g., CVE list for `vulnerability`).
 
 ### `predicate.integrity`
 
 Identity-verification verdict (integrity). OPTIONAL at L1; REQUIRED
 at L2+ where the verdict MUST be `verified` for admitted artifacts.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `method` | string | REQUIRED if `result == "verified"`. One of `hash`, `signature`. |
-| `keyId` | string | REQUIRED if `method` is `signature`. URI identifying the verifying key. |
-| `expected` | object | REQUIRED if `result == "verified"`. The expected hash or signature value (e.g., from a lockfile, an upstream signing manifest, or a curated allow-list). |
-| `result` | string | REQUIRED. One of `verified`, `failed`, `unverified`. `unverified` MAY appear only at L1 and means the platform did not perform an integrity check. `failed` MUST NOT appear for an artifact admitted to the platform — failed verification implies refusal of admission. |
+| Field | Type | Description
+| --- | --- | ---
+| `method` | string | REQUIRED if `result == "verified"`. One of `hash`, `signature`.
+| `keyId` | string | REQUIRED if `method` is `signature`. URI identifying the verifying key.
+| `expected` | object | REQUIRED if `result == "verified"`. The expected hash or signature value (e.g., from a lockfile, an upstream signing manifest, or a curated allow-list).
+| `result` | string | REQUIRED. One of `verified`, `failed`, `unverified`. `unverified` MAY appear only at L1 and means the platform did not perform an integrity check. `failed` MUST NOT appear for an artifact admitted to the platform — failed verification implies refusal of admission.
 
 ### `predicate.publisherSignature`
 
@@ -217,34 +217,34 @@ Maven Central GPG, Sigstore, RubyGems). It is distinct from per-fetch
 integrity (which only confirms a known hash matches) and from upstream
 provenance verification (which confirms how the artifact was built).
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `method` | string | REQUIRED if `result == "verified"`. Identifier of the signing scheme (e.g., `npm-provenance`, `gpg`, `sigstore`, `cosign`). |
-| `keyId` | string | REQUIRED if `result == "verified"`. URI or identifier of the publisher's expected signing identity. |
-| `result` | string | REQUIRED unless `availability == "unavailable"`. One of `verified`, `failed`, `unverified`. `unverified` MAY appear only at L1. `failed` MUST NOT appear for an artifact admitted to the platform. |
-| `availability` | string | REQUIRED if no publisher signature was published by upstream. MUST be `unavailable`. Distinguishes "no publisher signature was published" from "verification was not attempted." |
+| Field | Type | Description
+| --- | --- | ---
+| `method` | string | REQUIRED if `result == "verified"`. Identifier of the signing scheme (e.g., `npm-provenance`, `gpg`, `sigstore`, `cosign`).
+| `keyId` | string | REQUIRED if `result == "verified"`. URI or identifier of the publisher's expected signing identity.
+| `result` | string | REQUIRED unless `availability == "unavailable"`. One of `verified`, `failed`, `unverified`. `unverified` MAY appear only at L1. `failed` MUST NOT appear for an artifact admitted to the platform.
+| `availability` | string | REQUIRED if no publisher signature was published by upstream. MUST be `unavailable`. Distinguishes "no publisher signature was published" from "verification was not attempted."
 
 ### `predicate.policyEvaluations[]`
 
 Array of policy-evaluation verdicts. This field is *descriptive* —
-the Dependency Track does not specify which policies a platform must
+the Dependency Track does not specify which policies a platform MUST
 apply. The integrity claim is that whatever policies are applied are
 transparent in the Provenance. At L2+, for every admission policy the
 platform applied to this dep, the platform MUST record a corresponding
 entry here.
 
-Example policy types implementers may attest to (not exhaustive, not
+Example policy types implementers MAY attest to (not exhaustive, not
 prescribed): deny-list against a malicious-packages feed, minimum
 version-age quarantine, license allow-list, malware-scanner gate,
 custom organizational policies.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `policy.id` | string | REQUIRED. URI identifying the policy. |
-| `policy.version` | string | REQUIRED. Policy version. |
-| `timestamp` | string | REQUIRED. RFC 3339 timestamp of evaluation. |
-| `result` | string | REQUIRED. One of `allow`, `deny`. Provenance with any `deny` MUST NOT be emitted for an artifact admitted to the platform — a `deny` verdict implies admission was refused. |
-| `description` | string | OPTIONAL. Free-text description of the policy, for verifiers and auditors. |
+| Field | Type | Description
+| --- | --- | ---
+| `policy.id` | string | REQUIRED. URI identifying the policy.
+| `policy.version` | string | REQUIRED. Policy version.
+| `timestamp` | string | REQUIRED. RFC 3339 timestamp of evaluation.
+| `result` | string | REQUIRED. One of `allow`, `deny`. Provenance with any `deny` MUST NOT be emitted for an artifact admitted to the platform — a `deny` verdict implies admission was refused.
+| `description` | string | OPTIONAL. Free-text description of the policy, for verifiers and auditors.
 
 ### `predicate.upstreamProvenance`
 
@@ -255,12 +255,12 @@ whether it was verified, and the result. Verifiers can use this to
 chain trust to the upstream's source of truth, or to refuse Provenance
 whose upstream-provenance verdict doesn't satisfy verifier policy.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `predicateType` | string | REQUIRED if `verification.result` is `verified` or `failed`. URI of the upstream predicate (e.g., `https://slsa.dev/provenance/v1`). |
-| `ref` | string | REQUIRED if `verification.result` is `verified` or `failed`. Reference to the upstream attestation (DSSE envelope URI or content-addressed digest). |
-| `verification.result` | string | REQUIRED unless `availability == "unavailable"`. One of `verified`, `failed`, `not-attempted`. `not-attempted` means upstream publishes provenance but the platform did not verify. |
-| `availability` | string | REQUIRED if upstream does NOT publish provenance. MUST be `unavailable`. Distinguishes "no upstream provenance was published" from "verification was not attempted." |
+| Field | Type | Description
+| --- | --- | ---
+| `predicateType` | string | REQUIRED if `verification.result` is `verified` or `failed`. URI of the upstream predicate (e.g., `https://slsa.dev/provenance/v1`).
+| `ref` | string | REQUIRED if `verification.result` is `verified` or `failed`. Reference to the upstream attestation (DSSE envelope URI or content-addressed digest).
+| `verification.result` | string | REQUIRED unless `availability == "unavailable"`. One of `verified`, `failed`, `not-attempted`. `not-attempted` means upstream publishes provenance but the platform did not verify.
+| `availability` | string | REQUIRED if upstream does NOT publish provenance. MUST be `unavailable`. Distinguishes "no upstream provenance was published" from "verification was not attempted."
 
 ### `predicate.signingIsolation`
 
@@ -273,11 +273,11 @@ process that executed dep-supplied code. The motivating attack class is
 Shai Hulud-style npm worms in which install scripts exfiltrate
 credentials (including signing keys) from the ingestion environment.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `method` | string | REQUIRED. One of `separate-signer-process` (signing runs as a process that did not execute dep code), `hardware-backed-key` (signing key is held in an HSM or KMS reachable only by the signing service), `post-ingestion-signing` (signing occurs in a job that runs after the ingestion job and does not have access to dep code or the ingestion environment's secrets), `other`. |
-| `description` | string | REQUIRED. Free-text description of how the platform achieved isolation, suitable for an auditor. |
-| `signerIdentity` | string | REQUIRED. URI of the signing service identity. MUST be distinct from any identity that executed dep-supplied code. |
+| Field | Type | Description
+| --- | --- | ---
+| `method` | string | REQUIRED. One of `separate-signer-process` (signing runs as a process that did not execute dep code), `hardware-backed-key` (signing key is held in an HSM or KMS reachable only by the signing service), `post-ingestion-signing` (signing occurs in a job that runs after the ingestion job and does not have access to dep code or the ingestion environment's secrets), `other`.
+| `description` | string | REQUIRED. Free-text description of how the platform achieved isolation, suitable for an auditor.
+| `signerIdentity` | string | REQUIRED. URI of the signing service identity. MUST be distinct from any identity that executed dep-supplied code.
 
 ### `predicate.ingestionIsolation`
 
@@ -288,31 +288,31 @@ This field is the attestation of the L3 anti-subversion claim that no
 other dep's ingestion could have contaminated this dep's ingestion,
 and vice versa.
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `method` | string | REQUIRED. One of `no-dep-code-executed` (the platform fully blocked install hooks and did not execute dep code during ingestion; cross-dep tampering via dep code is not possible because dep code did not run), `ephemeral-per-dep-environment` (each dep's ingestion ran in an isolated environment that was destroyed after admission), `other`. |
-| `description` | string | REQUIRED. Free-text description of how the platform achieved isolation. |
-| `environmentId` | string | OPTIONAL. Implementer-defined identifier of the ingestion environment (e.g., container ID, sandbox session ID) when `method == "ephemeral-per-dep-environment"`. |
+| Field | Type | Description
+| --- | --- | ---
+| `method` | string | REQUIRED. One of `no-dep-code-executed` (the platform fully blocked install hooks and did not execute dep code during ingestion; cross-dep tampering via dep code is not possible because dep code did not run), `ephemeral-per-dep-environment` (each dep's ingestion ran in an isolated environment that was destroyed after admission), `other`.
+| `description` | string | REQUIRED. Free-text description of how the platform achieved isolation.
+| `environmentId` | string | OPTIONAL. Implementer-defined identifier of the ingestion environment (e.g., container ID, sandbox session ID) when `method == "ephemeral-per-dep-environment"`.
 
-## Per-level required/optional matrix
+## Per-level requirements matrix
 
-| Field | L1 | L2 | L3 |
-| --- | --- | --- | --- |
-| `ingestor` | REQUIRED | REQUIRED | REQUIRED |
-| `ingestionPlatform` | REQUIRED | REQUIRED | REQUIRED |
-| `upstream.registry`, `upstream.name`, `upstream.version` | REQUIRED | REQUIRED | REQUIRED |
-| `upstream.digest` | OPTIONAL | REQUIRED | REQUIRED |
-| `ingestion.timestamp`, `ingestion.path` | REQUIRED | REQUIRED | REQUIRED |
-| `resolvedFrom` (for transitive deps) | OPTIONAL | REQUIRED | REQUIRED |
-| `scans[]` | OPTIONAL | OPTIONAL | OPTIONAL |
-| `integrity` | OPTIONAL | REQUIRED (`verified`) | REQUIRED (`verified`) |
-| `publisherSignature` | OPTIONAL | REQUIRED (`verified` or `unavailable`) | REQUIRED (`verified` or `unavailable`) |
-| Signed envelope | OPTIONAL | REQUIRED | REQUIRED |
-| Envelope signature recorded in a transparency log | OPTIONAL | OPTIONAL | REQUIRED |
-| `policyEvaluations[]` (record any policies applied) | OPTIONAL | REQUIRED for any policy the platform applies | REQUIRED for any policy the platform applies |
-| `upstreamProvenance` | OPTIONAL | OPTIONAL | REQUIRED |
-| `signingIsolation` | OPTIONAL | OPTIONAL | REQUIRED |
-| `ingestionIsolation` | OPTIONAL | OPTIONAL | REQUIRED |
+| Field | L1 | L2 | L3
+| --- | --- | --- | ---
+| `ingestor` | REQUIRED | REQUIRED | REQUIRED
+| `ingestionPlatform` | REQUIRED | REQUIRED | REQUIRED
+| `upstream.registry`, `upstream.name`, `upstream.version` | REQUIRED | REQUIRED | REQUIRED
+| `upstream.digest` | OPTIONAL | REQUIRED | REQUIRED
+| `ingestion.timestamp`, `ingestion.path` | REQUIRED | REQUIRED | REQUIRED
+| `resolvedFrom` (for transitive deps) | OPTIONAL | REQUIRED | REQUIRED
+| `scans[]` | OPTIONAL | OPTIONAL | OPTIONAL
+| `integrity` | OPTIONAL | REQUIRED (`verified`) | REQUIRED (`verified`)
+| `publisherSignature` | OPTIONAL | REQUIRED (`verified` or `unavailable`) | REQUIRED (`verified` or `unavailable`)
+| Signed envelope | OPTIONAL | REQUIRED | REQUIRED
+| Envelope signature recorded in a transparency log | OPTIONAL | OPTIONAL | REQUIRED
+| `policyEvaluations[]` (record any policies applied) | OPTIONAL | REQUIRED for any policy the platform applies | REQUIRED for any policy the platform applies
+| `upstreamProvenance` | OPTIONAL | OPTIONAL | REQUIRED
+| `signingIsolation` | OPTIONAL | OPTIONAL | REQUIRED
+| `ingestionIsolation` | OPTIONAL | OPTIONAL | REQUIRED
 
 At L1 the Provenance MAY be unsigned and self-asserted. At L2 the
 Provenance MUST be signed by a key controlled by the Dependency
@@ -371,7 +371,7 @@ level:
     (the platform attests no upstream provenance exists). If
     `upstreamProvenance.ref` is present, the verifier MAY independently
     verify the upstream attestation against the verifier's expectations
-    (this is the recommended path for end-to-end verification).
+    (this is the preferred path for end-to-end verification).
 
 A verifier MAY trust the platform's `integrity.result`,
 `policyEvaluations[].result`, and `upstreamProvenance.verification.result`
@@ -383,7 +383,7 @@ or MAY re-perform any of those checks independently.
 
 ### Minimal L1
 
-A minimal L1 attestation has the required identity fields and nothing
+A minimal L1 attestation has the REQUIRED identity fields and nothing
 else. The platform attests to the existence of the ingested artifact;
 verifiers apply policy on top. The Provenance MAY be unsigned at L1.
 
@@ -421,7 +421,7 @@ policy on top.
 The above predicate wrapped in a DSSE envelope signed by the Dependency
 Ingestion Platform's key, with `integrity` and `publisherSignature`
 verdicts at `verified`. If this artifact was resolved transitively,
-`resolvedFrom` would also be required. The platform optionally records
+`resolvedFrom` would also be REQUIRED. The platform optionally records
 any admission policies it applied in `policyEvaluations[]`.
 
 ```json
